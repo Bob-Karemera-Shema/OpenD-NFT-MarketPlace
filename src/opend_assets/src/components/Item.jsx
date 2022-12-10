@@ -3,11 +3,15 @@ import logo from "../../assets/logo.png";
 import {Actor, HttpAgent} from "@dfinity/agent";
 import {idlFactory} from "../../../declarations/nft";
 import {Principal} from "@dfinity/principal";
+import Button from "./Button";
 
 function Item(props) {
   const [nftName, setName] = useState();
   const [nftOwner, setOwner] = useState();
   const [nftImage, setImage] = useState();
+  const [button, setButton] = useState();
+  const [priceInput, setPriceInput] = useState();
+  let price;
 
   const id = props.id;
   const localHost = "http://localhost:8080";
@@ -25,11 +29,29 @@ function Item(props) {
     setName(await nftActor.getName());
     setOwner((await nftActor.getOwner()).toText());
     setImage(image);
+    setButton(<Button handleClick={sell} text="Sell"/>);
   }
 
   useEffect(() => {
     loadNFT();
   }, []);
+
+  function sell(){
+    setPriceInput(
+      <input
+            placeholder="Price in BToken"
+            type="number"
+            className="price-input"
+            value={price}
+            onChange={(e) => price = e.target.value}
+          />
+    );
+
+    setButton(<Button handleClick={confirmSell} text="Confirm"/>);
+  }
+
+  async function confirmSell(){
+  }
 
   return (
     <div className="disGrid-item">
@@ -45,6 +67,8 @@ function Item(props) {
           <p className="disTypography-root makeStyles-bodyText-24 disTypography-body2 disTypography-colorTextSecondary">
             Owner: {nftOwner}
           </p>
+          {priceInput}
+          {button}
         </div>
       </div>
     </div>
