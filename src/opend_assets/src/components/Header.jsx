@@ -14,10 +14,10 @@ function Header() {
 
   async function getNFTs(){
     const userNftIds = await opend.getOwnedNFTs(CURRENT_USER_ID);
-    setUserGallery(<Gallery title="My NFTs" IDs={userNftIds}/>);
+    setUserGallery(<Gallery title="My NFTs" IDs={userNftIds} role="collection"/>);
 
     const listedNftIds = await opend.getListedNFTs();
-    setListedGallery(<Gallery title="Discover" IDs={listedNftIds}/>);
+    setListedGallery(<Gallery title="Discover" IDs={listedNftIds} role="discover"/>);
   }
 
   useEffect(() => { getNFTs(); }, []);
