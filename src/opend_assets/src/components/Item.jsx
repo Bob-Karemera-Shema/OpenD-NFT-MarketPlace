@@ -38,13 +38,15 @@ function Item(props) {
     setOwner((await nftActor.getOwner()).toText());
     setImage(image);
     
-    const isListed = await opend.isListed(props.id);
-    if(isListed){
-      setOwner("OpenD");
-      setBlur({filter: "blur(4px"});
-      setSaleStatus("Listed");
-    } else {
-      setButton(<Button handleClick={sell} text="Sell"/>);
+    if(props.role === "collection"){
+      const isListed = await opend.isListed(props.id);
+      if(isListed){
+        setOwner("OpenD");
+        setBlur({filter: "blur(4px"});
+        setSaleStatus("Listed");
+      } else {
+        setButton(<Button handleClick={sell} text="Sell"/>);
+      }
     }
   }
 
