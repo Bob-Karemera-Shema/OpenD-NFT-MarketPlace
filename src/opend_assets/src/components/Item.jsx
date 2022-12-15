@@ -5,6 +5,8 @@ import {idlFactory} from "../../../declarations/nft";
 import {Principal} from "@dfinity/principal";
 import Button from "./Button";
 import { opend } from "../../../declarations/opend";
+import CURRENT_USER_ID from "../index";
+import PriceLabel from "./PriceLabel";
 
 function Item(props) {
   const [nftName, setName] = useState();
@@ -12,6 +14,7 @@ function Item(props) {
   const [nftImage, setImage] = useState();
   const [button, setButton] = useState();
   const [priceInput, setPriceInput] = useState();
+  const [priceLabel, setPriceLabel] = useState();
   const [loaderHidden, setLoaderHidden] = useState(true);
   const [blur, setBlur] =useState();
   const [saleStatus, setSaleStatus] = useState("");
@@ -47,6 +50,15 @@ function Item(props) {
       } else {
         setButton(<Button handleClick={sell} text="Sell"/>);
       }
+    } else if(props.role === "discover"){
+      const originalOwner = await opend.getOriginalOwner(props.id);
+
+      if(originalOwner.toText() != CURRENT_USER_ID.toText()){
+        setButton(<Button handleClick={buy} text="Buy"/>);
+      }
+
+      const price = await opend.getListedNFTPrice(props.id);
+      setPriceLabel(<PriceLabel price={price.toString()}/>);
     }
   }
 
@@ -65,10 +77,10 @@ function Item(props) {
           />
     );
 
-    setButton(<Button handleClick={confirmSell} text="Confirm"/>);
+    setButton(<Button handleClick={confirmSale} text="Confirm"/>);
   }
 
-  async function confirmSell(){
+  async function confirmSale(){
     setBlur({filter: "blur(4px"});
     setLoaderHidden(false);
     const listingFeedback = await opend.listItem(props.id, Number(price));
@@ -89,6 +101,12 @@ function Item(props) {
     }
   }
 
+  function buy(){
+    setButton(<Button handleClick={confirmPurchase} text="Confirm"/>);
+  }
+
+  async function confirmPurchase(){}
+
   return (
     <div className="disGrid-item">
       <div className="disPaper-root disCard-root makeStyles-root-17 disPaper-elevation1 disPaper-rounded">
@@ -104,6 +122,7 @@ function Item(props) {
           <div></div>
         </div>
         <div className="disCardContent-root">
+          {priceLabel}
           <h2 className="disTypography-root makeStyles-bodyText-24 disTypography-h5 disTypography-gutterBottom">
             {nftName}<span className="purple-text"> {saleStatus}</span>
           </h2>
